@@ -22,14 +22,14 @@ jobs:
           node-version: 22
           cache: 'npm'
       - run: npm cache clean --force
-      - run: rm -rf node_modules package-lock.json
+      - run: rm -rf node_modules
       - name: Install dependencies
-        run: npm install --prefer-offline --no-audit --no-fund
+        run: npm ci --omit=optional --no-audit --no-fund
         continue-on-error: true
         env:
           npm_config_fetch_timeout: 120000
       - name: Install dependencies (retry)
-        run: npm ci --no-audit --no-fund
+        run: npm ci --omit=optional --no-audit --no-fund
         if: failure()
         env:
           npm_config_fetch_timeout: 120000
