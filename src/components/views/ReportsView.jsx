@@ -91,12 +91,18 @@ function RecapCard({ title, icon, dep, exp, net, savRate, txCount, periodLabel, 
   );
 }
 
-function RecapBanner({ transactions, currency }) {
+function RecapBanner({ transactions, currency, reportPeriod, selectedPeriod }) {
   const now = new Date();
-  const thisWeek = getWeekKey(now);
-  const thisMonth = getMonthKey(now);
-  const wTx = transactions.filter((t) => getWeekKey(t.date) === thisWeek);
-  const mTx = transactions.filter((t) => getMonthKey(t.date) === thisMonth);
+  const currentWeek = getWeekKey(now);
+  const currentMonth = getMonthKey(now);
+
+  const weekKey = (reportPeriod === 'weekly' && selectedPeriod) ? selectedPeriod : currentWeek;
+  const monthKey = (reportPeriod === 'monthly' && selectedPeriod) ? selectedPeriod
+    : (reportPeriod === 'weekly' && selectedPeriod) ? selectedPeriod.slice(0, 7)
+    : currentMonth;
+
+  const wTx = transactions.filter((t) => getWeekKey(t.date) === weekKey);
+  const mTx = transactions.filter((t) => getMonthKey(t.date) === monthKey);
   let wDep = 0, wExp = 0, mDep = 0, mExp = 0;
   wTx.forEach((t) => (t.type === 'deposit' ? (wDep += t.amount) : (wExp += t.amount)));
   mTx.forEach((t) => (t.type === 'deposit' ? (mDep += t.amount) : (mExp += t.amount)));
@@ -116,17 +122,17 @@ function RecapBanner({ transactions, currency }) {
       </div>
       <div className="recap-cards-row">
         <RecapCard
-          title="This Week"
+          title={reportPeriod === 'weekly' && selectedPeriod ? 'Selected Week' : 'This Week'}
           icon={<i className="fa-solid fa-calendar-week" style={{ color: 'var(--indigo)' }} />}
           dep={wDep} exp={wExp} net={wNet} savRate={wSav} txCount={wTx.length}
-          periodLabel={weekLabel(thisWeek)}
+          periodLabel={weekLabel(weekKey)}
           currency={currency}
         />
         <RecapCard
-          title="This Month"
+          title={reportPeriod === 'monthly' && selectedPeriod ? 'Selected Month' : 'This Month'}
           icon={<i className="fa-solid fa-calendar-days" style={{ color: 'var(--teal)' }} />}
           dep={mDep} exp={mExp} net={mNet} savRate={mSav} txCount={mTx.length}
-          periodLabel={monthLabel(thisMonth)}
+          periodLabel={monthLabel(monthKey)}
           currency={currency}
         />
       </div>
@@ -174,7 +180,7 @@ export default function ReportsView({ transactions, currency, hideBalance, repor
           </div>
         )}
       </div>
-      <RecapBanner transactions={activeTx} currency={currency} />
+      <RecapBanner transactions={activeTx} currency={currency} reportPeriod={reportPeriod} selectedPeriod={selected} />
     </div>
   );
 }
