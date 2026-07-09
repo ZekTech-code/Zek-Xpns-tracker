@@ -129,7 +129,7 @@ function RecapBanner({ transactions, currency, reportPeriod, selectedPeriod }) {
           currency={currency}
         />
         <RecapCard
-          title={reportPeriod === 'monthly' && selectedPeriod ? monthLabel(monthKey) : 'This Month'}
+          title={selectedPeriod ? monthLabel(monthKey) : 'This Month'}
           icon={<i className="fa-solid fa-calendar-days" style={{ color: 'var(--teal)' }} />}
           dep={mDep} exp={mExp} net={mNet} savRate={mSav} txCount={mTx.length}
           periodLabel={monthLabel(monthKey)}
